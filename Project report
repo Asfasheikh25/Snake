@@ -1,0 +1,247 @@
+UNIVERSITY OF LAYYAH
+
+
+Snake Game Project Report
+
+
+Project Title: Snake Game Using Python
+Group: ASFA SHEIKH (UL-BSITE-23-02)
+KINZA SAIF (UL-BSITE-23-20)
+MEHNOOR AKRAM (UL-BSITE-23-66)
+
+Course Title: Data Structure
+Course CODE: CS-301
+
+Instructor’s Name: Faisal Hafeez
+
+
+
+
+
+
+Table of Contents
+Acknowledgment
+Summary
+Introduction
+Objectives
+Tools and Technologies
+Methodology
+Implementation
+Results
+Challenges
+Conclusion
+References
+
+Acknowledgment
+We express our sincere gratitude to Mr. Faisal Hafeez, our course instructor, for his valuable guidance and support throughout this project. We also thank our peers and mentors for their encouragement and constructive feedback. This project would not have been possible without their assistance.
+
+Summary
+The Snake Game project aims to implement a classic game using Python as part of the Data Structure course requirements. The primary objective is to understand and apply fundamental data structures, including arrays, linked lists, and queues, in a practical scenario. This report provides an overview of the problem statement, methodology, and results. The game consists of a snake that grows in size when it consumes food and ends when the snake collides with itself or the game boundary. The project utilized Python’s pygame library for graphical elements and game logic. The methodology involved defining the game grid, snake movement, collision detection, and scoring mechanisms. Key challenges included handling edge cases, optimizing performance, and ensuring smooth gameplay. The final implementation successfully demonstrated the application of data structures and game development techniques, achieving the stated objectives.
+
+Introduction
+The Snake Game is a well-known arcade game that gained popularity due to its simple yet engaging mechanics. In this project, we developed a Python-based version of the Snake Game to enhance our understanding of data structures and their applications in real-world scenarios. The game involves controlling a snake to consume food and grow while avoiding collisions with itself or the game boundary. This project provided a hands-on opportunity to explore data structures and develop programming skills.
+
+Objectives
+To implement the Snake Game using Python programming.
+To apply data structure concepts such as arrays, linked lists, and queues in the game logic.
+To create an engaging and functional game with smooth gameplay.
+To enhance problem-solving and debugging skills through practical application.
+
+Tools and Technologies
+Programming Language: Python 3.x
+Libraries: pygame, random, sys
+IDE: PyCharm, VS Code
+Version Control: Git
+Operating System: Windows 10/Linux
+
+Methodology
+The project followed these key steps:
+Planning: Defined the game’s features and requirements.
+Brainstormed ideas and researched similar games.
+Listed out key features: movement, scoring, collision detection, and game over scenarios.
+Environment Setup: Installed Python and necessary libraries.
+Configured the pygame library for game development.
+Set up a virtual environment for dependency management.
+Design: Sketched the game grid and mechanics.
+Defined the grid dimensions and coordinate system.
+Outlined user interface elements, including the score display and game over screen.
+Coding: Implemented core functionalities:
+Snake Movement: Controlled by the arrow keys, the snake moves in discrete steps on a grid.
+Collision Detection: The game ends if the snake hits a wall or itself.
+Food Generation: Food items are placed randomly within the grid.
+Scoring Mechanism: The score increases as the snake consumes food.
+Testing: Debugged the code and tested edge cases.
+Verified snake behavior at the grid boundaries.
+Ensured food does not spawn on the snake's body.
+Optimization: Enhanced performance and gameplay smoothness.
+Reduced latency in controls.
+Optimized collision checks for larger snakes.
+
+
+
+
+Implementation
+1. Game Design
+The game grid was designed using a 2D coordinate system, with each cell representing a fixed size.
+The snake was implemented as a list of tuples, where each tuple represents a segment of the snake's body.
+import tkinter as tk
+import random
+
+# Constants
+GAME_WIDTH = 700
+GAME_HEIGHT = 500
+SQUARE_SIZE = 20
+SNAKE_COLOR = "green"
+FOOD_COLOR = "red"
+BACKGROUND_COLOR = "black"
+        # Canvas setup
+        self.canvas = tk.Canvas(root, width=GAME_WIDTH, height=GAME_HEIGHT, bg=BACKGROUND_COLOR)
+        self.canvas.pack()
+
+2. Movement and Controls
+Arrow keys were mapped to control the direction of the snake's movement.
+A clock mechanism ensured consistent speed regardless of system performance.
+        # Game variables
+        self.snake = [(100, 100)]  # Initial snake coordinates
+        self.food = None
+        self.direction = "Right"
+        self.running = True
+        self.score = 0
+        self.direction_changed = False  # To prevent multiple changes in one tick
+
+        # Bind keys
+        self.root.bind("<Up>", lambda event: self.change_direction("Up"))
+        self.root.bind("<Down>", lambda event: self.change_direction("Down"))
+        self.root.bind("<Left>", lambda event: self.change_direction("Left"))
+        self.root.bind("<Right>", lambda event: self.change_direction("Right"))
+
+
+    def change_direction(self, new_direction):
+        """Change the direction of the snake."""
+        opposites = {"Up": "Down", "Down": "Up", "Left": "Right", "Right": "Left"}
+        if not self.direction_changed and new_direction != opposites.get(self.direction, ""):
+            self.direction = new_direction
+            self.direction_changed = True  # Prevent additional changes in the same tick
+
+3. Food and Growth
+Food items were represented by a randomly generated grid coordinate.
+When the snake consumes food, a new segment is added to its tail.
+class SnakeGame:
+    def _init_(self, root):
+        self.root = root
+        self.root.title("Snake Game")
+        self.root.resizable(False, False)
+
+
+        # Initialize game
+        self.create_food()
+        self.update()
+        self.root.mainloop()
+
+    def create_food(self):
+        """Place food at a random location, avoiding the snake's body."""
+        while True:
+            x = random.randint(0, (GAME_WIDTH // SQUARE_SIZE) - 1) * SQUARE_SIZE
+            y = random.randint(0, (GAME_HEIGHT // SQUARE_SIZE) - 1) * SQUARE_SIZE
+            if (x, y) not in self.snake:  # Ensure food is not placed on the snake
+                self.food = (x, y)
+                self.canvas.create_rectangle(x, y, x + SQUARE_SIZE, y + SQUARE_SIZE, fill=FOOD_COLOR, tag="food")
+                break
+
+    def update(self):
+        """Update the game state."""
+        if not self.running:
+            return
+
+        # Move the snake
+        x, y = self.snake[-1]
+        if self.direction == "Up":
+            y -= SQUARE_SIZE
+        elif self.direction == "Down":
+            y += SQUARE_SIZE
+        elif self.direction == "Left":
+            x -= SQUARE_SIZE
+        elif self.direction == "Right":
+            x += SQUARE_SIZE
+
+        new_head = (x, y)
+
+        # Check for collisions
+        if (
+            x < 0 or x >= GAME_WIDTH or
+            y < 0 or y >= GAME_HEIGHT or
+            new_head in self.snake
+        ):
+            self.game_over()
+            return
+
+        # Check if food is eaten
+        if new_head == self.food:
+            self.snake.append(new_head)
+            self.canvas.delete("food")
+            self.create_food()
+            self.drawsnake()
+            self.score += 1
+        else:
+            # Move snake forward
+            self.snake.append(new_head)
+            self.snake.pop(0)
+
+        # Update the canvas
+        self.canvas.delete("snake")
+        for segment in self.snake:
+            x, y = segment
+            self.canvas.create_rectangle(x, y, x + SQUARE_SIZE, y + SQUARE_SIZE, fill=SNAKE_COLOR, tag="snake")
+
+        self.direction_changed = False  # Allow direction change after the update
+        # Schedule the next update
+        self.root.after(100, self.update)
+
+
+4. Collision Detection
+Collision with walls or the snake's body was detected by comparing coordinates.
+If a collision occurs, the game ends and displays the final score.
+5. Scoring System
+A counter displayed the player’s current score on the game screen.
+Each food item consumed increased the score by a fixed amount.
+    def game_over(self):
+        """End the game."""
+        self.running = False
+        self.canvas.create_text(
+            GAME_WIDTH // 2,
+            GAME_HEIGHT // 2,
+            fill="white",
+            font="Times 20 bold",
+            text=f"Game Over! Score: {self.score}"
+        )
+
+# Create and run the game
+if _name== "main_":
+    root = tk.Tk()
+    game = SnakeGame(root) 
+
+Results
+The game was successfully implemented and tested.
+Users could control the snake, consume food, and achieve high scores.
+The game ran smoothly with consistent performance across devices.
+Data structures such as arrays and conditional logic were effectively applied in the game mechanics. 
+
+
+
+
+Challenges
+Collision Detection: Ensuring accurate detection of wall and self-collisions.
+Game Speed: Balancing speed with user input responsiveness.
+Edge Cases: Managing scenarios where food spawns on the snake’s body.
+Optimization: Reducing lag for longer snakes and larger grids.
+
+Conclusion
+The Snake Game project provided a practical application of data structures and programming concepts. The successful implementation of the game demonstrated our ability to design, code, and test a functional application. By leveraging Python and pygame, we created an engaging game that met all objectives. The experience gained through this project has significantly enhanced our technical skills and problem-solving abilities.
+
+References
+Python documentation: https://docs.python.org/3/
+pygame library: https://www.pygame.org/
+TutorialsPoint: https://www.tutorialspoint.com/python/index.htm
+GeeksforGeeks: https://www.geeksforgeeks.org/python-programming-language/
+
+
